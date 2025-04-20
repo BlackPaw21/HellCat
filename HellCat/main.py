@@ -37,8 +37,20 @@ def build_command(config):
     hc_dir = Path(__file__).parent / 'hashcat-6.2.6'
     hc_exe = hc_dir / 'hashcat.exe'
 
-    cmd = [
-        str(hc_exe),
+    cmd = [str(hc_exe)]
+
+    # Restore-only command
+    if config.get('restore_only'):
+        cmd += [f"--session={config['session_name']}", '--restore']
+        return cmd
+
+    # New session command
+    cmd += [f"--session={config['session_name']}"]
+    if config.get('restore'):
+        cmd.append('--restore')
+
+    # Core options
+    cmd += [
         '--hash-type=22000',
         '--status',
         f"--status-timer={config['status_timer']}",
@@ -47,13 +59,13 @@ def build_command(config):
         '--workload-profile=3'
     ]
 
-    # Device selection: CPU + GPU or GPU only
+    # Device selection
     if config['use_cpu']:
         cmd += ['-D', '1,2', '-d', f"{config['cpu_id']},{config['gpu_id']}"]
     else:
         cmd += ['-D', '2', '-d', config['gpu_id']]
 
-    # Attack mode: brute (mask) or dict (dictionary/hybrid)
+    # Attack mode
     if config['mode'] == 'brute':
         cmd += [
             '--attack-mode=3',
@@ -66,10 +78,8 @@ def build_command(config):
         ]
     else:
         if config['mask']:
-            # Hybrid: dictionary + mask
             cmd += ['--attack-mode=6', config['hashfile'], config['wordlist'], config['mask']]
         else:
-            # Pure dictionary
             cmd += ['--attack-mode=0', config['hashfile'], config['wordlist']]
 
     return cmd
@@ -78,8 +88,38 @@ def build_command(config):
 def main():
     print(Style.BRIGHT + Fore.MAGENTA + "\n=== Hellcat Launcher ===\n")
 
-    # Prompt for hash file
+    # Define Hashcat directory
+    hc_dir = Path(__file__).parent / 'hashcat-6.2.6'
+
+    # Initial menu: New or Continue
+    choice = prompt_menu("Select option:", ['New session', 'Continue session'])
+    if choice == 2:
+        # Continue: list existing sessions
+        restores = list(hc_dir.glob('*.restore'))
+        if not restores:
+            print(Fore.RED + "No restore files found in hashcat-6.2.6 folder.")
+            sys.exit(1)
+        sessions = [r.stem for r in restores]
+        sel = prompt_menu("Choose session to restore:", sessions)
+        session_name = sessions[sel-1]
+        config = {'session_name': session_name, 'restore_only': True}
+        cmd = build_command(config)
+        print(Fore.BLUE + "\nRunning restore command:\n" + Fore.WHITE + ' '.join(cmd) + "\n")
+        result = subprocess.run(cmd, shell=False, cwd=str(hc_dir))
+        sys.exit(result.returncode)
+
+    # New session flow
+    # Prompt for hash file and session name
     hashfile = prompt_input("Enter path to .hc22000 hash file")
+    default_session = Path(hashfile).stem
+    session_name = prompt_input("Enter session name for checkpointing", default_session)
+
+    # Check for existing checkpoint
+    restore = False
+    restore_file = hc_dir / f"{session_name}.restore"
+    if restore_file.exists():
+        if prompt_menu("Restore previous session?", ["No", "Yes"]) == 2:
+            restore = True
 
     # Device configuration
     print(Fore.CYAN + "\n-- Device Configuration --")
@@ -97,6 +137,8 @@ def main():
 
     config = {
         'hashfile': hashfile,
+        'session_name': session_name,
+        'restore': restore,
         'cpu_id': cpu_id,
         'gpu_id': gpu_id,
         'use_cpu': use_cpu,
@@ -108,27 +150,41 @@ def main():
     # Mode‑specific settings
     if mode == 'brute':
         print(Fore.CYAN + "\n-- Brute‑Force Settings --")
-        config['inc_min'] = prompt_input("Increment‑min length", "10")
-        config['inc_max'] = prompt_input("Increment‑max length", "12")
+        # Mask help
+        print(Style.BRIGHT + "Mask placeholders:")
+        print("  ?l = lowercase (a-z)")
+        print("  ?u = uppercase (A-Z)")
+        print("  ?d = digit (0-9)")
+        print("  ?s = special chars (!@#$%^&*())")
+        print("  ?a = all of the above")
+        print("  ?1 = custom charset (letters)")
+        print(Style.BRIGHT + "\nExample (Israeli phone + letters):")
+        print("  Phone # (10 digits) + 2 letters: ?d?d?d?d?d?d?d?d?d?d?1?1\n")
+        config['inc_min'] = prompt_input("Increment-min length", "10")
+        config['inc_max'] = prompt_input("Increment-max length", "12")
         config['mask'] = prompt_input("Mask template (e.g. '?d?d?d?d?d?d?d?d?d?d?1?1')")
         config['wordlist'] = None
     else:
         print(Fore.CYAN + "\n-- Dictionary Settings --")
         config['wordlist'] = prompt_input("Enter path to wordlist file")
         if prompt_menu("Use hybrid mask?", ["No", "Yes"]) == 2:
+            print(Style.BRIGHT + "Mask placeholders:")
+            print("  ?l = lowercase (a-z)")
+            print("  ?u = uppercase (A-Z)")
+            print("  ?d = digit (0-9)")
+            print("  ?s = special chars (!@#$%^&*())")
+            print("  ?a = all of the above")
+            print("  ?1 = custom charset (letters)")
+            print("  10 digits + 2 letters: ?d?d?d?d?d?d?d?d?d?d?1?1\n")
             config['mask'] = prompt_input("Enter mask template (e.g. '?d?d?d?d')")
         else:
             config['mask'] = None
         config['inc_min'] = None
         config['inc_max'] = None
 
-    # Build command and define working directory
+    # Build command and execute
     cmd = build_command(config)
-    hc_dir = Path(__file__).parent / 'hashcat-6.2.6'
-
     print(Fore.BLUE + "\nRunning command:\n" + Fore.WHITE + ' '.join(cmd) + "\n")
-
-    # Execute Hashcat within its directory so OpenCL/ kernels load correctly
     result = subprocess.run(cmd, shell=False, cwd=str(hc_dir))
     sys.exit(result.returncode)
 
