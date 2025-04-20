@@ -8,7 +8,8 @@ An **interactive**, colorized, Windows‑friendly Python wrapper around [Hashcat
 - 🎯 Choose between **Brute‑force (mask)** or **Dictionary/Hybrid** attacks  
 - 🌡️ Set a custom **temperature abort** threshold  
 - ⏱️ Auto‑refresh status every 5 seconds (configurable)   
-- 🔧 Launch with a single `hellcat.bat` click  
+- 🔧 Launch with a single `hellcat.bat` click
+- 📃 Easy checkpoint restore
 
 ---
 
