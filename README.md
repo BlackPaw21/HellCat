@@ -2,7 +2,7 @@
 
 ![Python](https://img.shields.io/badge/python-3.7%2B-blue.svg) ![Hashcat](https://img.shields.io/badge/hashcat-6.2.6+-orange.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
-An **interactive**, colorized, Windows‑friendly Python wrapper around [Hashcat](https://hashcat.net), designed to simplify WPA‑PMKID/EAPOL cracking on Windows 11. Hellcat lets you:
+An **interactive**, colorized, Windows‑friendly Python wrapper around Hashcat, designed to simplify WPA‑PMKID/EAPOL cracking on Windows 11. Hellcat lets you:
 
 - 🔒 Atomatically uses `-m 22000` (WPA unified PMKID/EAPOL)  
 - 🎯 Choose between **Brute‑force (mask)** or **Dictionary/Hybrid** attacks  
