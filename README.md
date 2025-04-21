@@ -15,23 +15,21 @@ An **interactive**, colorized, Windows‑friendly Python wrapper around [Hashcat
 
 ## 💾 Installation
 
-**Clone the repository**  
+### **#1 Clone the repository**  
    ```bash
    git clone https://github.com/BlackPaw21/hellcat.git
    cd hellcat
    ```
 
-**Download HashCat**  
-   ```bash
-   https://hashcat.net/files/hashcat-6.2.6.7z
-   ```
+### **#2 Download HashCat**  
+   https://hashcat.net/files/hashcat-6.2.6.7
 
-**extract hashcat**  
+### **#3 extract hashcat**  
    ```bash
    Extract "hashcat-6.2.6" into "HellCat"
    ```
 
-**Double‑click** `hellcat.bat` to run (it installs Colorama automatically).
+### **#4 Double‑click** `hellcat.bat` to run (installs dependencies automatically).
 
 ---
 
