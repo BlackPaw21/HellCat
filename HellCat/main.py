@@ -175,7 +175,7 @@ def main():
             print("  ?s = special chars (!@#$%^&*())")
             print("  ?a = all of the above")
             print("  ?1 = custom charset (letters)")
-            print("  10 digits + 2 letters: ?d?d?d?d?d?d?d?d?d?d?1?1\n")
+            print("  10 digits + 2 letters: ?d?d?d?d?d?d?d?d?d?d?1?1\n") 
             config['mask'] = prompt_input("Enter mask template (e.g. '?d?d?d?d')")
         else:
             config['mask'] = None
