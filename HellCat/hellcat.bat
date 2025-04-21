@@ -1,15 +1,48 @@
 @echo off
-REM → Switch to the batch file’s own folder, so Hashcat finds OpenCL/
+REM → Change to the script’s folder so Hashcat finds its OpenCL/ folder
 cd /d "%~dp0"
 
-REM → Make sure pip is up to date (optional)
-python -m pip install --upgrade pip
+REM → Inform the user we’re about to install/check dependencies
+echo Checking for dependencies....
 
-REM → Automatically install colorama (idempotent)
-python -m pip install colorama
+REM → Suppress Python deprecation warnings globally
+set PYTHONWARNINGS=ignore
 
-REM → Launch Hellcat (passes along any CLI args)
+REM → Upgrade pip quietly and disable its self‑check
+python -W ignore -m pip install --upgrade pip -q --disable-pip-version-check --no-python-version-warning
+
+REM → Install colorama quietly, suppressing deprecation text
+python -W ignore -m pip install colorama -q --no-python-version-warning
+
+REM → Clear the screen before starting the main launcher
+cls
+
+REM → Launch the Hellcat Python frontend
 python main.py %*
 
-REM → Keep the window open so you can read output
+REM → Pause so you can read any messages
+pause
+@echo off
+REM → Change to the script’s folder so Hashcat finds its OpenCL/ folder
+cd /d "%~dp0"
+
+REM → Inform the user we’re about to install/check dependencies
+echo Checking for dependencies....
+
+REM → Suppress Python deprecation warnings globally
+set PYTHONWARNINGS=ignore
+
+REM → Upgrade pip quietly and disable its self‑check
+python -W ignore -m pip install --upgrade pip -q --disable-pip-version-check --no-python-version-warning
+
+REM → Install colorama quietly, suppressing deprecation text
+python -W ignore -m pip install colorama -q --no-python-version-warning
+
+REM → Clear the screen before starting the main launcher
+cls
+
+REM → Launch the Hellcat Python frontend
+python main.py %*
+
+REM → Pause so you can read any messages
 pause
