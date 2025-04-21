@@ -1,6 +1,6 @@
 ## Hellcat Launcher
 
-![Python](https://img.shields.io/badge/python-blue.svg) ![Hashcat](https://img.shields.io/badge/hashcat-orange.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg)
+![Windows 11](https://img.shields.io/badge/Windows%2011-%230079d5.svg?style=for-the-badge&logo=Windows%2011&logoColor=white) ![Python](https://img.shields.io/badge/python-blue.svg) ![Hashcat](https://img.shields.io/badge/hashcat-orange.svg) ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
 An **interactive**, colorized, Windows‑friendly Python wrapper around Hashcat, designed to simplify WPA‑PMKID/EAPOL cracking on Windows 11. Hellcat lets you:
 
